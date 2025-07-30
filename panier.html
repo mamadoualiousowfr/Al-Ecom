@@ -1,0 +1,42 @@
+<!-- panier.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panier - Al-ecom</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Al-ecom</h1>
+    <nav>
+      <a href="accueil.html">Accueil</a>
+      <a href="produits.html">Produits</a>
+      <a href="panier.html" class="active">Panier</a>
+      <a href="contact.html">Contact</a>
+      <a href="apropos.html">À propos</a>
+    </nav>
+  </header>
+
+  <main class="panier">
+    <h2>Votre panier</h2>
+    <div id="panier-container">
+      <!-- Les produits ajoutés au panier s'afficheront ici -->
+      <p>Chargement du panier...</p>
+    </div>
+
+    <div class="total-panier">
+      Total : <span id="total-prix">0 GNF</span>
+    </div>
+
+    <button id="vider-panier" class="btn-supprimer">Vider le panier</button>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Al-ecom. Tous droits réservés.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
