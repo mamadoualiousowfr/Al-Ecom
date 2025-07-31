@@ -3,31 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Nos Produits</title>
+  <title>Nos Produits - Al-ecom</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header>
-    <h1>Al-ecom</h1>
+    <h1>Nos Produits</h1>
     <nav>
       <a href="index.html">Accueil</a>
       <a href="produits.html" class="active">Produits</a>
-      <a href="panier.html">Panier</a>
+      <a href="panier.html" class="lien-panier">
+        🛒<span id="compteur-panier">0</span>
+      </a>
       <a href="contact.html">Contact</a>
       <a href="apropos.html">À propos</a>
     </nav>
   </header>
 
   <main>
-    <h2>Nos produits</h2>
-    <div id="produits" class="products">
-      <!-- Les produits seront insérés ici par JavaScript -->
-    </div>
+    <form id="filtre-form" style="margin: 20px; text-align: center;">
+      <select id="categorie" name="categorie" aria-label="Filtrer par catégorie">
+        <option value="">-- Choisir une catégorie --</option>
+        <option value="Pantalon">Pantalon</option>
+        <option value="Chaussures">Chaussures</option>
+        <option value="Casquette">Casquette</option>
+        <option value="Cullotte">Cullotte</option>
+        <option value="Maillot">Maillot</option>
+      </select>
+
+      <input type="text" id="search" name="search" placeholder="Rechercher un produit..." aria-label="Recherche produit" />
+      <button type="submit">Rechercher</button>
+    </form>
+
+    <section id="produits" class="grille-produits">
+      <!-- Les produits s’afficheront ici via JavaScript -->
+    </section>
   </main>
 
   <footer>
-    &copy; 2025 Al-ecom. Tous droits réservés.
+    <p>&copy; 2025 Al-ecom. Tous droits réservés.</p>
   </footer>
+
+  <script>
+    // Gestion formulaire filtre + recherche
+    document.getElementById('filtre-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const categorie = document.getElementById('categorie').value;
+      const search = document.getElementById('search').value;
+      const url = new URL(window.location.href);
+      url.searchParams.set('categorie', categorie);
+      url.searchParams.set('search', search);
+      window.location.href = url.toString();
+    });
+  </script>
 
   <script src="script.js"></script>
 </body>

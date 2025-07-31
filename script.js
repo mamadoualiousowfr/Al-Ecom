@@ -34,13 +34,13 @@ const produits = {
   ]
 };
 
-// Utilitaire : récupère un paramètre dans l'URL
+// Récupère un paramètre de l’URL
 function getUrlParam(param) {
   const params = new URLSearchParams(window.location.search);
   return params.get(param) || '';
 }
 
-// Affiche les produits sur produits.html
+// Affiche les produits sur la page produits.html
 function afficherProduits() {
   const container = document.getElementById('produits');
   if (!container) return;
@@ -77,8 +77,7 @@ function afficherProduits() {
       <button data-id="${produit.id}">Ajouter au panier</button>
     `;
 
-    const btn = div.querySelector('button');
-    btn.addEventListener('click', () => {
+    div.querySelector('button').addEventListener('click', () => {
       ajouterAuPanier(produit);
     });
 
@@ -97,11 +96,11 @@ function ajouterAuPanier(produit) {
     panier.push({ ...produit, quantite: 1 });
   }
   localStorage.setItem('panier', JSON.stringify(panier));
-  // Suppression de l'alerte pour ajout automatique
   afficherPanier();
+  mettreAJourCompteurPanier();
 }
 
-// Affiche le panier sur panier.html
+// Affiche le panier avec uniquement le total général
 function afficherPanier() {
   const container = document.getElementById('panier-container');
   if (!container) return;
@@ -111,8 +110,7 @@ function afficherPanier() {
 
   if (panier.length === 0) {
     container.innerHTML = '<p>Votre panier est vide.</p>';
-    const totalElem = document.getElementById('total-prix');
-    if (totalElem) totalElem.textContent = '0 GNF';
+    afficherTotal(0);
     return;
   }
 
@@ -134,7 +132,6 @@ function afficherPanier() {
           <span>${item.quantite}</span>
           <button class="plus" data-id="${item.id}">+</button>
         </div>
-        <p>Sous-total : ${(item.prix * item.quantite).toLocaleString()} GNF</p>
       </div>
       <button class="btn-supprimer" data-id="${item.id}">Supprimer</button>
     `;
@@ -142,26 +139,35 @@ function afficherPanier() {
     container.appendChild(div);
   });
 
-  const totalElem = document.getElementById('total-prix');
-  if (totalElem) totalElem.textContent = total.toLocaleString() + ' GNF';
+  afficherTotal(total);
 
+  // Événements sur boutons +
   container.querySelectorAll('button.plus').forEach(btn => {
     btn.addEventListener('click', () => {
       modifierQuantite(btn.dataset.id, 1);
     });
   });
 
+  // Événements sur boutons -
   container.querySelectorAll('button.moins').forEach(btn => {
     btn.addEventListener('click', () => {
       modifierQuantite(btn.dataset.id, -1);
     });
   });
 
+  // Événements sur boutons supprimer
   container.querySelectorAll('button.btn-supprimer').forEach(btn => {
     btn.addEventListener('click', () => {
       supprimerProduit(btn.dataset.id);
     });
   });
+}
+
+// Met à jour l’affichage du total général
+function afficherTotal(montant) {
+  const totalElem = document.getElementById('total-prix');
+  if (!totalElem) return;
+  totalElem.textContent = montant.toLocaleString() + ' GNF';
 }
 
 // Modifie la quantité d’un produit dans le panier
@@ -175,6 +181,7 @@ function modifierQuantite(id, delta) {
 
   localStorage.setItem('panier', JSON.stringify(panier));
   afficherPanier();
+  mettreAJourCompteurPanier();
 }
 
 // Supprime un produit du panier
@@ -183,15 +190,26 @@ function supprimerProduit(id) {
   panier = panier.filter(p => p.id != id);
   localStorage.setItem('panier', JSON.stringify(panier));
   afficherPanier();
+  mettreAJourCompteurPanier();
 }
 
-// Vide le panier
+// Vide le panier entier
 function viderPanier() {
   localStorage.removeItem('panier');
   afficherPanier();
+  mettreAJourCompteurPanier();
 }
 
-// Met à jour la classe active dans le menu selon la page
+// Met à jour le compteur du panier dans le header
+function mettreAJourCompteurPanier() {
+  const compteur = document.getElementById('compteur-panier');
+  if (!compteur) return;
+  let panier = JSON.parse(localStorage.getItem('panier')) || [];
+  let totalArticles = panier.reduce((acc, item) => acc + item.quantite, 0);
+  compteur.textContent = totalArticles;
+}
+
+// Met en surbrillance la page active dans le menu
 function menuActif() {
   const liens = document.querySelectorAll('nav a');
   const chemin = window.location.pathname.split('/').pop();
@@ -200,9 +218,10 @@ function menuActif() {
   });
 }
 
-// Initialisation selon la page
+// Initialisation au chargement de la page
 window.addEventListener('load', () => {
   menuActif();
+  mettreAJourCompteurPanier();
 
   if (document.getElementById('produits')) {
     afficherProduits();
