@@ -1,14 +1,13 @@
 /* Variables de couleurs */
 :root {
-  --orange: #ff6f00;
-  --jaune: #ffd700;
-  --gris-clair: #d3d3d3;
+  --orange: #ff9900;
+  --bleu-foncé: #232f3e;
+  --gris-clair: #f3f3f3;
   --gris-moyen: #ddd;
-  --gris-foncé: #333;
+  --gris-foncé: #555;
   --blanc: #fff;
   --noir: #000;
   --rouge: #b12704;
-  --bleu-foncé: #232f3e;
 }
 
 /* Reset */
