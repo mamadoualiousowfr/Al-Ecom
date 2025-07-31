@@ -1,4 +1,4 @@
-// Données produits exactes fournies
+// Données produits
 const produits = {
   Pantalon: [
     { id: 1, nom: "Pantalon jean", prix: 100000, image: "Images/images (1).jpeg" },
@@ -34,46 +34,190 @@ const produits = {
   ]
 };
 
-// Affichage produits dans l'HTML
+// Utilitaire : récupère un paramètre dans l'URL
+function getUrlParam(param) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(param) || '';
+}
+
+// Affiche les produits sur produits.html
 function afficherProduits() {
-  const container = document.getElementById("liste-produits");
-  container.innerHTML = "";
-  for (let categorie in produits) {
-    produits[categorie].forEach(prod => {
-      const div = document.createElement("div");
-      div.className = "produit";
-      div.innerHTML = `
-        <img src="${prod.image}" alt="${prod.nom}" />
-        <h3>${prod.nom}</h3>
-        <p>${prod.prix.toLocaleString()} GNF</p>
-        <button class="btn-ajouter" onclick="ajouterAuPanier(${prod.id}, '${categorie}')">Ajouter au panier</button>
-      `;
-      container.appendChild(div);
+  const container = document.getElementById('produits');
+  if (!container) return;
+
+  const categorie = getUrlParam('categorie').toLowerCase();
+  const search = getUrlParam('search').toLowerCase();
+
+  let liste = [];
+  Object.entries(produits).forEach(([cat, items]) => {
+    if (!categorie || cat.toLowerCase() === categorie) {
+      liste = liste.concat(items.map(p => ({ ...p, categorie: cat })));
+    }
+  });
+
+  if (search) {
+    liste = liste.filter(p => p.nom.toLowerCase().includes(search));
+  }
+
+  container.innerHTML = '';
+
+  if (liste.length === 0) {
+    container.innerHTML = `<p style="color: var(--orange); font-weight: 700;">Aucun produit trouvé.</p>`;
+    return;
+  }
+
+  liste.forEach(produit => {
+    const div = document.createElement('div');
+    div.className = 'produit';
+
+    div.innerHTML = `
+      <img src="${produit.image}" alt="${produit.nom}" />
+      <h4>${produit.nom}</h4>
+      <p>${produit.prix.toLocaleString()} GNF</p>
+      <button data-id="${produit.id}">Ajouter au panier</button>
+    `;
+
+    const btn = div.querySelector('button');
+    btn.addEventListener('click', () => {
+      ajouterAuPanier(produit);
     });
-  }
+
+    container.appendChild(div);
+  });
 }
 
-let panier = [];
+// Ajoute un produit au panier localStorage
+function ajouterAuPanier(produit) {
+  let panier = JSON.parse(localStorage.getItem('panier')) || [];
+  const index = panier.findIndex(p => p.id === produit.id);
 
-function ajouterAuPanier(id, categorie) {
-  const produit = produits[categorie].find(p => p.id === id);
-  if (produit) {
-    panier.push(produit);
-    updatePanier();
+  if (index !== -1) {
+    panier[index].quantite++;
+  } else {
+    panier.push({ ...produit, quantite: 1 });
   }
+  localStorage.setItem('panier', JSON.stringify(panier));
+  alert(`"${produit.nom}" ajouté au panier.`);
+  afficherPanier();
 }
 
-function updatePanier() {
-  const count = document.getElementById("panier-count");
-  count.textContent = panier.length;
-  localStorage.setItem("panier", JSON.stringify(panier));
+// Affiche le panier sur panier.html
+function afficherPanier() {
+  const container = document.getElementById('panier-container');
+  if (!container) return;
+
+  let panier = JSON.parse(localStorage.getItem('panier')) || [];
+  container.innerHTML = '';
+
+  if (panier.length === 0) {
+    container.innerHTML = '<p>Votre panier est vide.</p>';
+    const totalElem = document.getElementById('total-prix');
+    if (totalElem) totalElem.textContent = '0 GNF';
+    return;
+  }
+
+  let total = 0;
+
+  panier.forEach(item => {
+    total += item.prix * item.quantite;
+
+    const div = document.createElement('div');
+    div.className = 'article-panier';
+
+    div.innerHTML = `
+      <img src="${item.image}" alt="${item.nom}" class="image-panier" />
+      <div class="infos-panier">
+        <h4>${item.nom}</h4>
+        <p>Prix unitaire : ${item.prix.toLocaleString()} GNF</p>
+        <div class="quantite-controls">
+          <button class="moins" data-id="${item.id}">-</button>
+          <span>${item.quantite}</span>
+          <button class="plus" data-id="${item.id}">+</button>
+        </div>
+        <p>Sous-total : ${(item.prix * item.quantite).toLocaleString()} GNF</p>
+      </div>
+      <button class="btn-supprimer" data-id="${item.id}">Supprimer</button>
+    `;
+
+    container.appendChild(div);
+  });
+
+  const totalElem = document.getElementById('total-prix');
+  if (totalElem) totalElem.textContent = total.toLocaleString() + ' GNF';
+
+  container.querySelectorAll('button.plus').forEach(btn => {
+    btn.addEventListener('click', () => {
+      modifierQuantite(btn.dataset.id, 1);
+    });
+  });
+
+  container.querySelectorAll('button.moins').forEach(btn => {
+    btn.addEventListener('click', () => {
+      modifierQuantite(btn.dataset.id, -1);
+    });
+  });
+
+  container.querySelectorAll('button.btn-supprimer').forEach(btn => {
+    btn.addEventListener('click', () => {
+      supprimerProduit(btn.dataset.id);
+    });
+  });
 }
 
-window.onload = () => {
-  afficherProduits();
-  const stored = localStorage.getItem("panier");
-  if (stored) {
-    panier = JSON.parse(stored);
-    updatePanier();
+// Modifie la quantité d’un produit dans le panier
+function modifierQuantite(id, delta) {
+  let panier = JSON.parse(localStorage.getItem('panier')) || [];
+  const index = panier.findIndex(p => p.id == id);
+  if (index === -1) return;
+
+  panier[index].quantite += delta;
+  if (panier[index].quantite < 1) panier[index].quantite = 1;
+
+  localStorage.setItem('panier', JSON.stringify(panier));
+  afficherPanier();
+}
+
+// Supprime un produit du panier
+function supprimerProduit(id) {
+  let panier = JSON.parse(localStorage.getItem('panier')) || [];
+  panier = panier.filter(p => p.id != id);
+  localStorage.setItem('panier', JSON.stringify(panier));
+  afficherPanier();
+}
+
+// Vide le panier
+function viderPanier() {
+  localStorage.removeItem('panier');
+  afficherPanier();
+}
+
+// Met à jour la classe active dans le menu selon la page
+function menuActif() {
+  const liens = document.querySelectorAll('nav a');
+  const chemin = window.location.pathname.split('/').pop();
+  liens.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === chemin);
+  });
+}
+
+// Initialisation selon la page
+window.addEventListener('load', () => {
+  menuActif();
+
+  if (document.getElementById('produits')) {
+    afficherProduits();
   }
-};
+
+  if (document.getElementById('panier-container')) {
+    afficherPanier();
+
+    const btnVider = document.getElementById('vider-panier');
+    if (btnVider) {
+      btnVider.addEventListener('click', () => {
+        if (confirm('Voulez-vous vraiment vider le panier ?')) {
+          viderPanier();
+        }
+      });
+    }
+  }
+});
