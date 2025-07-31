@@ -1,83 +1,79 @@
-// Liste complète des produits
-const produits = [
-  { id: 1, nom: "Pantalon jean", prix: 100000, image: "Images/images (1).jpeg", categorie: "Pantalon" },
-  { id: 2, nom: "Chemise classique", prix: 75000, image: "Images/images (2).jpeg", categorie: "Chemise" },
-  { id: 3, nom: "T-shirt blanc", prix: 30000, image: "Images/images (3).jpeg", categorie: "T-shirt" },
-  { id: 4, nom: "Veste en cuir", prix: 250000, image: "Images/images (4).jpeg", categorie: "Veste" },
-  { id: 5, nom: "Short sport", prix: 40000, image: "Images/images (5).jpeg", categorie: "Short" },
-  { id: 6, nom: "Pull gris", prix: 85000, image: "Images/images (6).jpeg", categorie: "Pull" },
-  { id: 7, nom: "Chaussures noires", prix: 150000, image: "Images/images (7).jpeg", categorie: "Chaussures" },
-  { id: 8, nom: "Casquette rouge", prix: 25000, image: "Images/images (8).jpeg", categorie: "Casquette" },
-  { id: 9, nom: "Montre argentée", prix: 120000, image: "Images/images (9).jpeg", categorie: "Accessoires" },
-  { id: 10, nom: "Sac à dos", prix: 90000, image: "Images/images (10).jpeg", categorie: "Accessoires" },
-  { id: 11, nom: "Lunettes de soleil", prix: 60000, image: "Images/images (11).jpeg", categorie: "Accessoires" },
-  { id: 12, nom: "Ceinture en cuir", prix: 45000, image: "Images/images (12).jpeg", categorie: "Accessoires" },
-  { id: 13, nom: "Chapeau élégant", prix: 38000, image: "Images/images (13).jpeg", categorie: "Chapeau" },
-  { id: 14, nom: "Sandales été", prix: 48000, image: "Images/images (14).jpeg", categorie: "Chaussures" },
-  { id: 15, nom: "Sweat capuche", prix: 98000, image: "Images/images (15).jpeg", categorie: "Sweat" },
-  { id: 16, nom: "Débardeur sport", prix: 25000, image: "Images/images (16).jpeg", categorie: "T-shirt" },
-  { id: 17, nom: "Jean slim", prix: 110000, image: "Images/images (17).jpeg", categorie: "Pantalon" },
-  { id: 18, nom: "Blazer homme", prix: 200000, image: "Images/images (18).jpeg", categorie: "Veste" },
-  { id: 19, nom: "Chaussures habillées", prix: 175000, image: "Images/images (19).jpeg", categorie: "Chaussures" },
-  { id: 20, nom: "Maillot de foot", prix: 75000, image: "Images/images (20).jpeg", categorie: "Sport" },
-  { id: 21, nom: "Écharpe laine", prix: 32000, image: "Images/images (21).jpeg", categorie: "Accessoires" },
-  { id: 22, nom: "Gants hiver", prix: 28000, image: "Images/images (22).jpeg", categorie: "Accessoires" },
-];
+// Données produits exactes fournies
+const produits = {
+  Pantalon: [
+    { id: 1, nom: "Pantalon jean", prix: 100000, image: "Images/images (1).jpeg" },
+    { id: 2, nom: "Pantalon jean", prix: 100000, image: "Images/images (2).jpeg" },
+    { id: 3, nom: "Pantalon jean", prix: 110000, image: "Images/images.jpeg" }
+  ],
+  Chaussures: [
+    { id: 4, nom: "jordan 1", prix: 230000, image: "Images/téléchargement (1).jpeg" },
+    { id: 5, nom: "jordan 2", prix: 220000, image: "Images/téléchargement (2).jpeg" },
+    { id: 6, nom: "jordan 1", prix: 230000, image: "Images/téléchargement (5).jpeg" },
+    { id: 7, nom: "jordan 11", prix: 250000, image: "Images/téléchargement (6).jpeg" },
+    { id: 8, nom: "jordan 5", prix: 220000, image: "Images/téléchargement (7).jpeg" },
+    { id: 9, nom: "jordan 4", prix: 230000, image: "Images/téléchargement (8).jpeg" },
+    { id: 10, nom: "jordan 3", prix: 200000, image: "Images/téléchargement (9).jpeg" }
+  ],
+  Casquette: [
+    { id: 11, nom: "Casquette", prix: 50000, image: "Images/téléchargement (3).jpeg" },
+    { id: 12, nom: "Casquette", prix: 40000, image: "Images/téléchargement (10).jpeg" }
+  ],
+  Cullotte: [
+    { id: 13, nom: "Cullotte", prix: 70000, image: "Images/téléchargement (4).jpeg" },
+    { id: 14, nom: "Cullotte", prix: 60000, image: "Images/téléchargement (26).jpeg" }
+  ],
+  Maillot: [
+    { id: 15, nom: "Ivory Cost", prix: 150000, image: "Images/téléchargement (11).jpeg" },
+    { id: 16, nom: "Real Madrid", prix: 150000, image: "Images/téléchargement (14).jpeg" },
+    { id: 17, nom: "Real Madrid", prix: 150000, image: "Images/téléchargement (15).jpeg" },
+    { id: 18, nom: "Barcelone", prix: 150000, image: "Images/téléchargement (16).jpeg" },
+    { id: 19, nom: "Barcelone", prix: 150000, image: "Images/téléchargement (18).jpeg" },
+    { id: 20, nom: "Barcelone", prix: 150000, image: "Images/téléchargement (19).jpeg" },
+    { id: 21, nom: "Guinea", prix: 150000, image: "Images/téléchargement (20).jpeg" },
+    { id: 22, nom: "Ivory Cost", prix: 150000, image: "Images/téléchargement (22).jpeg" }
+  ]
+};
+
+// Affichage produits dans l'HTML
+function afficherProduits() {
+  const container = document.getElementById("liste-produits");
+  container.innerHTML = "";
+  for (let categorie in produits) {
+    produits[categorie].forEach(prod => {
+      const div = document.createElement("div");
+      div.className = "produit";
+      div.innerHTML = `
+        <img src="${prod.image}" alt="${prod.nom}" />
+        <h3>${prod.nom}</h3>
+        <p>${prod.prix.toLocaleString()} GNF</p>
+        <button class="btn-ajouter" onclick="ajouterAuPanier(${prod.id}, '${categorie}')">Ajouter au panier</button>
+      `;
+      container.appendChild(div);
+    });
+  }
+}
 
 let panier = [];
 
-function afficherProduits() {
-  const conteneur = document.querySelector(".products");
-  conteneur.innerHTML = "";
-  produits.forEach(p => {
-    conteneur.innerHTML += `
-      <div class="produit">
-        <img src="${p.image}" alt="${p.nom}" />
-        <h3>${p.nom}</h3>
-        <p>${p.prix.toLocaleString()} GNF</p>
-        <button class="btn-ajouter" onclick="ajouterPanier(${p.id})">Ajouter au panier</button>
-      </div>`;
-  });
+function ajouterAuPanier(id, categorie) {
+  const produit = produits[categorie].find(p => p.id === id);
+  if (produit) {
+    panier.push(produit);
+    updatePanier();
+  }
 }
 
-function ajouterPanier(id) {
-  const produit = produits.find(p => p.id === id);
-  panier.push(produit);
-  afficherPanier();
-  mettreAJourBadge();
+function updatePanier() {
+  const count = document.getElementById("panier-count");
+  count.textContent = panier.length;
+  localStorage.setItem("panier", JSON.stringify(panier));
 }
 
-function afficherPanier() {
-  const conteneur = document.querySelector(".panier-items");
-  conteneur.innerHTML = "";
-  let total = 0;
-  panier.forEach((item, index) => {
-    total += item.prix;
-    conteneur.innerHTML += `
-      <div class="panier-item">
-        <img src="${item.image}" alt="${item.nom}" />
-        <p>${item.nom}</p>
-        <p>${item.prix.toLocaleString()} GNF</p>
-        <button class="btn-supprimer" onclick="supprimerDuPanier(${index})">Supprimer</button>
-      </div>`;
-  });
-  document.querySelector(".total-panier").textContent = `Total: ${total.toLocaleString()} GNF`;
-}
-
-function supprimerDuPanier(index) {
-  panier.splice(index, 1);
-  afficherPanier();
-  mettreAJourBadge();
-}
-
-function mettreAJourBadge() {
-  const badge = document.getElementById("panier-count");
-  badge.textContent = panier.length;
-  badge.style.display = panier.length > 0 ? "inline-block" : "none";
-}
-
-// Initialisation
-document.addEventListener("DOMContentLoaded", () => {
+window.onload = () => {
   afficherProduits();
-  mettreAJourBadge();
-});
+  const stored = localStorage.getItem("panier");
+  if (stored) {
+    panier = JSON.parse(stored);
+    updatePanier();
+  }
+};
