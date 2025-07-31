@@ -1,15 +1,15 @@
+/* Couleurs principales */
 :root {
-  --orange: #ff6f00;
+  --orange: #f08804;
   --jaune: #ffd700;
   --noir: #111;
-  --gris: #f2f2f2;
+  --gris: #f5f5f5;
   --blanc: #fff;
-  --gris-foncé: #333;
 }
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: Arial, sans-serif;
   background-color: var(--gris);
   color: var(--noir);
 }
@@ -17,152 +17,94 @@ body {
 header {
   background-color: var(--noir);
   color: var(--blanc);
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 28px;
-}
-
-nav {
-  margin-top: 10px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  padding: 10px;
+  text-align: center;
 }
 
 nav a {
   color: var(--blanc);
   text-decoration: none;
-  padding: 8px 15px;
-  background-color: var(--gris-foncé);
-  border-radius: 5px;
-  position: relative;
+  margin: 0 10px;
 }
 
 nav a.active {
-  background-color: var(--orange);
+  font-weight: bold;
+  border-bottom: 2px solid var(--orange);
 }
 
-#panier-count {
-  background: red;
-  color: white;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 13px;
-  position: absolute;
-  top: -5px;
-  right: -8px;
-}
-
-main {
+.products, .panier-items {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   padding: 20px;
 }
 
-.products,
-#produits {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 20px;
-}
-
-.produit {
+.produit, .panier-item {
   background-color: var(--blanc);
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 15px;
+  padding: 10px;
   text-align: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.produit img {
-  max-width: 100%;
+.produit img, .panier-item img {
+  width: 100%;
   height: auto;
-  border-radius: 5px;
+  max-height: 150px;
+  object-fit: cover;
 }
 
-.produit button {
+.btn-ajouter, .btn-supprimer {
   background-color: var(--orange);
   color: var(--blanc);
   border: none;
   padding: 8px 12px;
-  margin-top: 8px;
+  margin-top: 5px;
   cursor: pointer;
   border-radius: 5px;
-  transition: 0.2s;
+  font-size: 14px;
 }
 
-.produit button:hover {
-  background-color: var(--jaune);
-  color: var(--noir);
-}
-
-.panier {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.produit-panier {
-  display: flex;
-  align-items: center;
-  background-color: var(--blanc);
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
-  gap: 15px;
-}
-
-.produit-panier img {
-  width: 80px;
-  height: auto;
-  border-radius: 5px;
+.btn-ajouter:hover, .btn-supprimer:hover {
+  background-color: #cc6e00;
 }
 
 .total-panier {
   font-weight: bold;
-  font-size: 18px;
-  margin-top: 10px;
-}
-
-.btn-supprimer {
-  background-color: crimson;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  width: fit-content;
+  padding: 15px;
+  text-align: center;
+  font-size: 1.2em;
 }
 
 footer {
   background-color: var(--noir);
   color: var(--blanc);
   text-align: center;
-  padding: 15px;
-  margin-top: 30px;
+  padding: 10px;
+}
+
+/* Panier badge */
+#panier-count {
+  background-color: red;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-size: 12px;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  display: none;
 }
 
 /* Responsive */
-@media screen and (max-width: 600px) {
-  nav {
-    justify-content: center;
+@media (max-width: 768px) {
+  .products, .panier-items {
+    grid-template-columns: repeat(3, 1fr);
   }
+}
 
-  .produit-panier {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .produit-panier img {
-    width: 100%;
-  }
-
-  .products {
-    grid-template-columns: 1fr 1fr;
+@media (max-width: 480px) {
+  .products, .panier-items {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
