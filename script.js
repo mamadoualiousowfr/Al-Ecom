@@ -1,4 +1,3 @@
-// ========== Données produits (exemple) ==========
 const produits = [
   {
     id: 1,
@@ -9,107 +8,133 @@ const produits = [
   },
   {
     id: 2,
-    nom: "Chaussures Nike",
-    prix: 250000,
+    nom: "T-shirt blanc",
+    prix: 75000,
     image: "Images/images (2).jpeg",
-    categorie: "Chaussures"
+    categorie: "T-shirt"
   },
   {
     id: 3,
-    nom: "Casquette stylée",
-    prix: 50000,
+    nom: "Chaussures sport",
+    prix: 200000,
     image: "Images/images (3).jpeg",
-    categorie: "Casquette"
+    categorie: "Chaussures"
+  },
+  {
+    id: 4,
+    nom: "Casquette rouge",
+    prix: 40000,
+    image: "Images/images (4).jpeg",
+    categorie: "Accessoires"
+  },
+  {
+    id: 5,
+    nom: "Robe élégante",
+    prix: 150000,
+    image: "Images/images (5).jpeg",
+    categorie: "Robe"
+  },
+  {
+    id: 6,
+    nom: "Montre homme",
+    prix: 300000,
+    image: "Images/images (6).jpeg",
+    categorie: "Accessoires"
+  },
+  {
+    id: 7,
+    nom: "Téléphone Samsung",
+    prix: 2500000,
+    image: "Images/images (7).jpeg",
+    categorie: "Téléphonie"
   }
 ];
 
-// ========== Affichage des produits ==========
+// Affichage des produits
 if (document.getElementById("produits")) {
-  const conteneurProduits = document.getElementById("produits");
-  conteneurProduits.innerHTML = "";
-
+  const container = document.getElementById("produits");
   produits.forEach((produit) => {
-    const produitDiv = document.createElement("div");
-    produitDiv.className = "produit";
-    produitDiv.innerHTML = `
+    const div = document.createElement("div");
+    div.className = "produit";
+    div.innerHTML = `
       <img src="${produit.image}" alt="${produit.nom}" />
       <h3>${produit.nom}</h3>
       <p>${produit.prix.toLocaleString()} GNF</p>
-      <button onclick='ajouterAuPanier(${JSON.stringify(produit)})'>Ajouter au panier</button>
+      <button onclick="ajouterPanier(${produit.id})">Ajouter au panier</button>
     `;
-    conteneurProduits.appendChild(produitDiv);
+    container.appendChild(div);
   });
 }
 
-// ========== Fonction ajouter au panier ==========
-function ajouterAuPanier(produit) {
-  let panier = JSON.parse(localStorage.getItem("panier")) || [];
-  panier.push(produit);
-  localStorage.setItem("panier", JSON.stringify(panier));
-  alert(`Produit ajouté : ${produit.nom}`);
-  mettreAJourCompteurPanier();
+// Gestion du panier
+function getPanier() {
+  return JSON.parse(localStorage.getItem("panier")) || [];
 }
 
-// ========== Chargement du panier ==========
-if (document.getElementById("panier-container")) {
-  afficherPanier();
+function setPanier(panier) {
+  localStorage.setItem("panier", JSON.stringify(panier));
+  majCompteurPanier();
+}
+
+function ajouterPanier(idProduit) {
+  const panier = getPanier();
+  panier.push(idProduit);
+  setPanier(panier);
+  alert("Produit ajouté au panier !");
+}
+
+function majCompteurPanier() {
+  const compteur = document.getElementById("compteur-panier");
+  const panier = getPanier();
+  if (compteur) {
+    compteur.textContent = panier.length;
+    compteur.style.display = panier.length > 0 ? "inline-block" : "none";
+  }
 }
 
 function afficherPanier() {
-  const panier = JSON.parse(localStorage.getItem("panier")) || [];
-  const conteneur = document.getElementById("panier-container");
-  const totalPrix = document.getElementById("total-prix");
-  conteneur.innerHTML = "";
+  const panier = getPanier();
+  const container = document.getElementById("panier-container");
+  const totalElement = document.getElementById("total-prix");
+
+  if (!container || !totalElement) return;
+
+  container.innerHTML = "";
 
   if (panier.length === 0) {
-    conteneur.innerHTML = "<p>Votre panier est vide.</p>";
-    totalPrix.textContent = "0 GNF";
+    container.innerHTML = "<p>Votre panier est vide.</p>";
+    totalElement.textContent = "0 GNF";
     return;
   }
 
   let total = 0;
-  panier.forEach((produit, index) => {
-    total += produit.prix;
-
-    const div = document.createElement("div");
-    div.className = "item-panier";
-    div.innerHTML = `
-      <img src="${produit.image}" alt="${produit.nom}" />
-      <div>
-        <h4>${produit.nom}</h4>
-        <p>${produit.prix.toLocaleString()} GNF</p>
-        <button onclick="supprimerDuPanier(${index})">Supprimer</button>
-      </div>
-    `;
-    conteneur.appendChild(div);
+  panier.forEach((id) => {
+    const produit = produits.find((p) => p.id === id);
+    if (produit) {
+      total += produit.prix;
+      const div = document.createElement("div");
+      div.className = "produit-panier";
+      div.innerHTML = `
+        <img src="${produit.image}" alt="${produit.nom}" />
+        <span>${produit.nom} - ${produit.prix.toLocaleString()} GNF</span>
+      `;
+      container.appendChild(div);
+    }
   });
 
-  totalPrix.textContent = `${total.toLocaleString()} GNF`;
-  mettreAJourCompteurPanier();
+  totalElement.textContent = `${total.toLocaleString()} GNF`;
 }
 
-function supprimerDuPanier(index) {
-  const panier = JSON.parse(localStorage.getItem("panier")) || [];
-  panier.splice(index, 1);
-  localStorage.setItem("panier", JSON.stringify(panier));
+document.addEventListener("DOMContentLoaded", () => {
+  majCompteurPanier();
   afficherPanier();
-}
 
-document.getElementById("vider-panier")?.addEventListener("click", () => {
-  localStorage.removeItem("panier");
-  afficherPanier();
-});
-
-// ========== Mise à jour compteur dans le menu ==========
-function mettreAJourCompteurPanier() {
-  const panier = JSON.parse(localStorage.getItem("panier")) || [];
-  const liens = document.querySelectorAll("a[href='panier.html']");
-  liens.forEach((lien) => {
-    lien.textContent = `Panier (${panier.length})`;
-  });
-}
-
-// ========== Appeler la fonction à chaque chargement ==========
-window.addEventListener("DOMContentLoaded", () => {
-  mettreAJourCompteurPanier();
+  const viderBtn = document.getElementById("vider-panier");
+  if (viderBtn) {
+    viderBtn.addEventListener("click", () => {
+      localStorage.removeItem("panier");
+      afficherPanier();
+      majCompteurPanier();
+    });
+  }
 });
