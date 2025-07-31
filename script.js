@@ -1,227 +1,156 @@
 // Données produits
-const produits = {
-  Pantalon: [
-    { id: 1, nom: "Pantalon jean", prix: 100000, image: "Images/images (1).jpeg" },
-    { id: 2, nom: "Pantalon jean", prix: 100000, image: "Images/images (2).jpeg" },
-    { id: 3, nom: "Pantalon jean", prix: 110000, image: "Images/images.jpeg" }
-  ],
-  Chaussures: [
-    { id: 4, nom: "jordan 1", prix: 230000, image: "Images/téléchargement (1).jpeg" },
-    { id: 5, nom: "jordan 2", prix: 220000, image: "Images/téléchargement (2).jpeg" },
-    { id: 6, nom: "jordan 1", prix: 230000, image: "Images/téléchargement (5).jpeg" },
-    { id: 7, nom: "jordan 11", prix: 250000, image: "Images/téléchargement (6).jpeg" },
-    { id: 8, nom: "jordan 5", prix: 220000, image: "Images/téléchargement (7).jpeg" },
-    { id: 9, nom: "jordan 4", prix: 230000, image: "Images/téléchargement (8).jpeg" },
-    { id: 10, nom: "jordan 3", prix: 200000, image: "Images/téléchargement (9).jpeg" }
-  ],
-  Casquette: [
-    { id: 11, nom: "Casquette", prix: 50000, image: "Images/téléchargement (3).jpeg" },
-    { id: 12, nom: "Casquette", prix: 40000, image: "Images/téléchargement (10).jpeg" }
-  ],
-  Cullotte: [
-    { id: 13, nom: "Cullotte", prix: 70000, image: "Images/téléchargement (4).jpeg" },
-    { id: 14, nom: "Cullotte", prix: 60000, image: "Images/téléchargement (26).jpeg" }
-  ],
-  Maillot: [
-    { id: 15, nom: "Ivory Cost", prix: 150000, image: "Images/téléchargement (11).jpeg" },
-    { id: 16, nom: "Real Madrid", prix: 150000, image: "Images/téléchargement (14).jpeg" },
-    { id: 17, nom: "Real Madrid", prix: 150000, image: "Images/téléchargement (15).jpeg" },
-    { id: 18, nom: "Barcelone", prix: 150000, image: "Images/téléchargement (16).jpeg" },
-    { id: 19, nom: "Barcelone", prix: 150000, image: "Images/téléchargement (18).jpeg" },
-    { id: 20, nom: "Barcelone", prix: 150000, image: "Images/téléchargement (19).jpeg" },
-    { id: 21, nom: "Guinea", prix: 150000, image: "Images/téléchargement (20).jpeg" },
-    { id: 22, nom: "Ivory Cost", prix: 150000, image: "Images/téléchargement (22).jpeg" }
-  ]
-};
+const produits = [
+  { id: 1, nom: "Pantalon jean", prix: 100000, image: "Images/images (1).jpeg", categorie: "Pantalon" },
+  { id: 2, nom: "Chaussures Nike", prix: 200000, image: "Images/images (2).jpeg", categorie: "Chaussures" },
+  { id: 3, nom: "Casquette Rouge", prix: 50000, image: "Images/images (3).jpeg", categorie: "Casquette" },
+  { id: 4, nom: "Cullotte Femme", prix: 30000, image: "Images/images (4).jpeg", categorie: "Cullotte" },
+  { id: 5, nom: "Maillot PSG", prix: 150000, image: "Images/images (5).jpeg", categorie: "Maillot" },
+];
 
-// Utilitaire : récupère un paramètre dans l'URL
-function getUrlParam(param) {
-  const params = new URLSearchParams(window.location.search);
-  return params.get(param) || '';
+// Récupère le panier depuis localStorage
+function getPanier() {
+  return JSON.parse(localStorage.getItem("panier")) || [];
 }
 
-// Affiche les produits sur produits.html
+// Sauvegarde le panier
+function savePanier(panier) {
+  localStorage.setItem("panier", JSON.stringify(panier));
+  updateBadge();
+}
+
+// Met à jour l’icône du panier
+function updateBadge() {
+  const panier = getPanier();
+  const total = panier.reduce((acc, p) => acc + p.quantite, 0);
+  const nav = document.querySelector("nav");
+  let badge = document.getElementById("panier-badge");
+
+  if (!badge) {
+    badge = document.createElement("span");
+    badge.id = "panier-badge";
+    badge.className = "badge-panier";
+    const lienPanier = [...nav.querySelectorAll("a")].find(a => a.href.includes("panier.html"));
+    lienPanier.appendChild(badge);
+  }
+  badge.textContent = total > 0 ? total : "";
+}
+
+// Affiche les produits dans produits.html
 function afficherProduits() {
-  const container = document.getElementById('produits');
-  if (!container) return;
+  const conteneur = document.getElementById("produits");
+  if (!conteneur) return;
 
-  const categorie = getUrlParam('categorie').toLowerCase();
-  const search = getUrlParam('search').toLowerCase();
+  const params = new URLSearchParams(window.location.search);
+  const categorie = params.get("categorie");
+  const search = params.get("search");
 
-  let liste = [];
-  Object.entries(produits).forEach(([cat, items]) => {
-    if (!categorie || cat.toLowerCase() === categorie) {
-      liste = liste.concat(items.map(p => ({ ...p, categorie: cat })));
-    }
+  const filtres = produits.filter(p => {
+    return (!categorie || p.categorie === categorie) &&
+           (!search || p.nom.toLowerCase().includes(search.toLowerCase()));
   });
 
-  if (search) {
-    liste = liste.filter(p => p.nom.toLowerCase().includes(search));
-  }
-
-  container.innerHTML = '';
-
-  if (liste.length === 0) {
-    container.innerHTML = `<p style="color: var(--orange); font-weight: 700;">Aucun produit trouvé.</p>`;
-    return;
-  }
-
-  liste.forEach(produit => {
-    const div = document.createElement('div');
-    div.className = 'produit';
-
+  conteneur.innerHTML = "";
+  filtres.forEach(prod => {
+    const div = document.createElement("div");
+    div.className = "produit";
     div.innerHTML = `
-      <img src="${produit.image}" alt="${produit.nom}" />
-      <h4>${produit.nom}</h4>
-      <p>${produit.prix.toLocaleString()} GNF</p>
-      <button data-id="${produit.id}">Ajouter au panier</button>
+      <img src="${prod.image}" alt="${prod.nom}" />
+      <h3>${prod.nom}</h3>
+      <p>${prod.prix.toLocaleString()} GNF</p>
+      <button onclick="ajouterAuPanier(${prod.id})">Ajouter au panier</button>
     `;
-
-    const btn = div.querySelector('button');
-    btn.addEventListener('click', () => {
-      ajouterAuPanier(produit);
-    });
-
-    container.appendChild(div);
+    conteneur.appendChild(div);
   });
 }
 
-// Ajoute un produit au panier localStorage
-function ajouterAuPanier(produit) {
-  let panier = JSON.parse(localStorage.getItem('panier')) || [];
-  const index = panier.findIndex(p => p.id === produit.id);
-
-  if (index !== -1) {
-    panier[index].quantite++;
+// Ajouter un produit au panier
+function ajouterAuPanier(id) {
+  const panier = getPanier();
+  const prod = panier.find(p => p.id === id);
+  if (prod) {
+    prod.quantite += 1;
   } else {
-    panier.push({ ...produit, quantite: 1 });
+    panier.push({ id, quantite: 1 });
   }
-  localStorage.setItem('panier', JSON.stringify(panier));
-
-  // Message dynamique du nombre de produits dans le panier
-  const totalProduits = panier.reduce((acc, item) => acc + item.quantite, 0);
-  alert(`Votre panier contient ${totalProduits} produit${totalProduits > 1 ? 's' : ''}.`);
-
-  afficherPanier();
+  savePanier(panier);
+  alert("Produit ajouté au panier !");
 }
 
-// Affiche le panier sur panier.html
+// Affiche les produits dans panier.html
 function afficherPanier() {
-  const container = document.getElementById('panier-container');
-  if (!container) return;
+  const conteneur = document.getElementById("panier-container");
+  if (!conteneur) return;
 
-  let panier = JSON.parse(localStorage.getItem('panier')) || [];
-  container.innerHTML = '';
-
+  const panier = getPanier();
   if (panier.length === 0) {
-    container.innerHTML = '<p>Votre panier est vide.</p>';
-    const totalElem = document.getElementById('total-prix');
-    if (totalElem) totalElem.textContent = '0 GNF';
+    conteneur.innerHTML = "<p>Votre panier est vide.</p>";
+    document.getElementById("total-prix").textContent = "0 GNF";
     return;
   }
 
+  conteneur.innerHTML = "";
   let total = 0;
 
   panier.forEach(item => {
-    total += item.prix * item.quantite;
+    const produit = produits.find(p => p.id === item.id);
+    total += produit.prix * item.quantite;
 
-    const div = document.createElement('div');
-    div.className = 'article-panier';
-
+    const div = document.createElement("div");
+    div.className = "ligne-panier";
     div.innerHTML = `
-      <img src="${item.image}" alt="${item.nom}" class="image-panier" />
-      <div class="infos-panier">
-        <h4>${item.nom}</h4>
-        <p>Prix unitaire : ${item.prix.toLocaleString()} GNF</p>
-        <div class="quantite-controls">
-          <button class="moins" data-id="${item.id}">-</button>
+      <img src="${produit.image}" alt="${produit.nom}" />
+      <div class="infos">
+        <h4>${produit.nom}</h4>
+        <p>${produit.prix.toLocaleString()} GNF x ${item.quantite}</p>
+        <div class="quantite">
+          <button onclick="modifierQuantite(${item.id}, -1)">-</button>
           <span>${item.quantite}</span>
-          <button class="plus" data-id="${item.id}">+</button>
+          <button onclick="modifierQuantite(${item.id}, 1)">+</button>
+          <button onclick="supprimerDuPanier(${item.id})">Supprimer</button>
         </div>
-        <p>Sous-total : ${(item.prix * item.quantite).toLocaleString()} GNF</p>
       </div>
-      <button class="btn-supprimer" data-id="${item.id}">Supprimer</button>
     `;
-
-    container.appendChild(div);
+    conteneur.appendChild(div);
   });
 
-  const totalElem = document.getElementById('total-prix');
-  if (totalElem) totalElem.textContent = total.toLocaleString() + ' GNF';
-
-  container.querySelectorAll('button.plus').forEach(btn => {
-    btn.addEventListener('click', () => {
-      modifierQuantite(btn.dataset.id, 1);
-    });
-  });
-
-  container.querySelectorAll('button.moins').forEach(btn => {
-    btn.addEventListener('click', () => {
-      modifierQuantite(btn.dataset.id, -1);
-    });
-  });
-
-  container.querySelectorAll('button.btn-supprimer').forEach(btn => {
-    btn.addEventListener('click', () => {
-      supprimerProduit(btn.dataset.id);
-    });
-  });
+  document.getElementById("total-prix").textContent = `${total.toLocaleString()} GNF`;
 }
 
-// Modifie la quantité d’un produit dans le panier
+// Modifier quantité
 function modifierQuantite(id, delta) {
-  let panier = JSON.parse(localStorage.getItem('panier')) || [];
-  const index = panier.findIndex(p => p.id == id);
-  if (index === -1) return;
+  const panier = getPanier();
+  const prod = panier.find(p => p.id === id);
+  if (!prod) return;
 
-  panier[index].quantite += delta;
-  if (panier[index].quantite < 1) panier[index].quantite = 1;
-
-  localStorage.setItem('panier', JSON.stringify(panier));
-  afficherPanier();
-}
-
-// Supprime un produit du panier
-function supprimerProduit(id) {
-  let panier = JSON.parse(localStorage.getItem('panier')) || [];
-  panier = panier.filter(p => p.id != id);
-  localStorage.setItem('panier', JSON.stringify(panier));
-  afficherPanier();
-}
-
-// Vide le panier
-function viderPanier() {
-  localStorage.removeItem('panier');
-  afficherPanier();
-}
-
-// Met à jour la classe active dans le menu selon la page
-function menuActif() {
-  const liens = document.querySelectorAll('nav a');
-  const chemin = window.location.pathname.split('/').pop();
-  liens.forEach(a => {
-    a.classList.toggle('active', a.getAttribute('href') === chemin);
-  });
-}
-
-// Initialisation selon la page
-window.addEventListener('load', () => {
-  menuActif();
-
-  if (document.getElementById('produits')) {
-    afficherProduits();
+  prod.quantite += delta;
+  if (prod.quantite <= 0) {
+    const index = panier.indexOf(prod);
+    panier.splice(index, 1);
   }
+  savePanier(panier);
+  afficherPanier();
+}
 
-  if (document.getElementById('panier-container')) {
+// Supprimer un produit du panier
+function supprimerDuPanier(id) {
+  const panier = getPanier().filter(p => p.id !== id);
+  savePanier(panier);
+  afficherPanier();
+}
+
+// Vider le panier
+const vider = document.getElementById("vider-panier");
+if (vider) {
+  vider.onclick = () => {
+    localStorage.removeItem("panier");
     afficherPanier();
+    updateBadge();
+  };
+}
 
-    const btnVider = document.getElementById('vider-panier');
-    if (btnVider) {
-      btnVider.addEventListener('click', () => {
-        if (confirm('Voulez-vous vraiment vider le panier ?')) {
-          viderPanier();
-        }
-      });
-    }
-  }
-});
+// Initialisation
+window.onload = () => {
+  afficherProduits();
+  afficherPanier();
+  updateBadge();
+};
