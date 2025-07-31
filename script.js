@@ -97,7 +97,11 @@ function ajouterAuPanier(produit) {
     panier.push({ ...produit, quantite: 1 });
   }
   localStorage.setItem('panier', JSON.stringify(panier));
-  alert(`"${produit.nom}" ajouté au panier.`);
+
+  // Message dynamique du nombre de produits dans le panier
+  const totalProduits = panier.reduce((acc, item) => acc + item.quantite, 0);
+  alert(`Votre panier contient ${totalProduits} produit${totalProduits > 1 ? 's' : ''}.`);
+
   afficherPanier();
 }
 
