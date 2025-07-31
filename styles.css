@@ -1,116 +1,110 @@
+/* Couleurs principales Amazon */
 :root {
-  --orange: #ff6f00;
-  --jaune: #ffd700;
-  --noir: #111;
-  --cendre: #f2f2f2;
-  --blanc: #fff;
-  --gris: #555;
-  --ombre: rgba(0, 0, 0, 0.1);
+  --amazon-orange: #ff9900;
+  --amazon-blue: #146eb4;
+  --amazon-gray: #eaeaea;
+  --amazon-dark: #232f3e;
+  --blanc: #ffffff;
+  --noir: #000000;
 }
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: var(--cendre);
+  font-family: Arial, sans-serif;
+  background-color: var(--amazon-gray);
   color: var(--noir);
 }
 
 header {
-  background-color: var(--orange);
+  background-color: var(--amazon-dark);
   color: var(--blanc);
-  padding: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  padding: 10px;
+  text-align: center;
 }
 
 nav a {
   color: var(--blanc);
   text-decoration: none;
-  padding: 8px 12px;
-  border-radius: 5px;
+  margin: 0 10px;
 }
 
-nav a.active, nav a:hover {
-  background-color: var(--jaune);
-  color: var(--noir);
+nav a.active {
+  font-weight: bold;
+  border-bottom: 2px solid var(--amazon-orange);
 }
 
 main {
   padding: 20px;
 }
 
-.products, .panier #panier-container {
+.products, .panier-items {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 }
 
-.produit, .produit-panier {
-  background: var(--blanc);
+.produit, .panier-item {
+  background-color: var(--blanc);
+  border: 1px solid var(--amazon-dark);
+  border-radius: 5px;
   padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px var(--ombre);
   text-align: center;
 }
 
-.produit img, .produit-panier img {
-  width: 100%;
+.produit img, .panier-item img {
+  max-width: 100%;
   height: auto;
-  border-radius: 5px;
 }
 
-button {
-  margin-top: 10px;
-  background-color: var(--orange);
+.btn-ajouter, .btn-supprimer {
+  background-color: var(--amazon-orange);
   color: var(--blanc);
   border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
+  padding: 10px 15px;
   cursor: pointer;
+  border-radius: 5px;
 }
 
-button:hover {
-  background-color: var(--jaune);
-  color: var(--noir);
-}
-
-footer {
-  background: var(--noir);
-  color: var(--blanc);
-  text-align: center;
-  padding: 10px;
-  margin-top: 20px;
+.btn-ajouter:hover, .btn-supprimer:hover {
+  background-color: #cc7a00;
 }
 
 .total-panier {
+  font-size: 1.2em;
   margin-top: 20px;
-  font-weight: bold;
-  font-size: 18px;
 }
 
-#compteur-panier {
+footer {
+  text-align: center;
+  background-color: var(--amazon-dark);
+  color: var(--blanc);
+  padding: 10px;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+/* Panier badge */
+#panier-count {
   background-color: red;
   color: white;
   padding: 2px 6px;
   border-radius: 50%;
   font-size: 12px;
-  position: relative;
-  top: -10px;
-  left: -5px;
-  display: none;
+  position: absolute;
+  top: 5px;
+  right: 10px;
 }
 
-/* Responsive - 3 colonnes sur mobile */
+/* Responsive */
 @media (max-width: 768px) {
-  .products, .panier #panier-container {
+  .products, .panier-items {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .products, .panier-items {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
