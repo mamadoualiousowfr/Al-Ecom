@@ -357,7 +357,8 @@ footer {
 @media (max-width: 600px) {
   .products,
   #panier-container {
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
   }
   header {
     flex-direction: column;
@@ -368,12 +369,21 @@ footer {
     margin-left: 0;
     margin-right: 1rem;
   }
+  /* Panier horizontal sur mobile */
   .article-panier {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
   }
   .image-panier {
-    width: 100%;
-    height: auto;
+    width: 80px;
+    height: 80px;
+  }
+  .infos-panier {
+    flex-grow: 1;
+    text-align: left;
+  }
+  .quantite-controls {
+    margin-bottom: 0;
   }
 }

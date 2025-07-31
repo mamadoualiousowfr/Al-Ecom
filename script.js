@@ -97,7 +97,7 @@ function ajouterAuPanier(produit) {
     panier.push({ ...produit, quantite: 1 });
   }
   localStorage.setItem('panier', JSON.stringify(panier));
-  alert(`"${produit.nom}" ajouté au panier.`);
+  // Suppression de l'alerte pour ajout automatique
   afficherPanier();
 }
 
