@@ -45,19 +45,16 @@ function afficherProduits() {
   const container = document.getElementById('produits');
   if (!container) return;
 
-  // Recherche catégorie et texte
   const categorie = getUrlParam('categorie').toLowerCase();
   const search = getUrlParam('search').toLowerCase();
 
   let liste = [];
-  // Rassemble tous les produits
   Object.entries(produits).forEach(([cat, items]) => {
     if (!categorie || cat.toLowerCase() === categorie) {
       liste = liste.concat(items.map(p => ({ ...p, categorie: cat })));
     }
   });
 
-  // Filtrer par texte recherche
   if (search) {
     liste = liste.filter(p => p.nom.toLowerCase().includes(search));
   }
@@ -101,7 +98,7 @@ function ajouterAuPanier(produit) {
   }
   localStorage.setItem('panier', JSON.stringify(panier));
   alert(`"${produit.nom}" ajouté au panier.`);
-  afficherPanier(); // Met à jour panier si affiché
+  afficherPanier();
 }
 
 // Affiche le panier sur panier.html
@@ -114,7 +111,8 @@ function afficherPanier() {
 
   if (panier.length === 0) {
     container.innerHTML = '<p>Votre panier est vide.</p>';
-    document.getElementById('total-prix').textContent = '0 GNF';
+    const totalElem = document.getElementById('total-prix');
+    if (totalElem) totalElem.textContent = '0 GNF';
     return;
   }
 
@@ -144,23 +142,21 @@ function afficherPanier() {
     container.appendChild(div);
   });
 
-  document.getElementById('total-prix').textContent = total.toLocaleString() + ' GNF';
+  const totalElem = document.getElementById('total-prix');
+  if (totalElem) totalElem.textContent = total.toLocaleString() + ' GNF';
 
-  // Écouteurs boutons +
   container.querySelectorAll('button.plus').forEach(btn => {
     btn.addEventListener('click', () => {
       modifierQuantite(btn.dataset.id, 1);
     });
   });
 
-  // Écouteurs boutons -
   container.querySelectorAll('button.moins').forEach(btn => {
     btn.addEventListener('click', () => {
       modifierQuantite(btn.dataset.id, -1);
     });
   });
 
-  // Écouteurs boutons supprimer
   container.querySelectorAll('button.btn-supprimer').forEach(btn => {
     btn.addEventListener('click', () => {
       supprimerProduit(btn.dataset.id);
